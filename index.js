@@ -47,12 +47,22 @@ app.post('/otp', (req, res) => {
 });
 
 app.post('/verify-otp', (req, res) => {
-    const { phone, otp } = req.body;
+    console.log("Verifying otp");
+    const phone = req.headers.phone;
+    const otp = req.headers.otp;
     // const expectedOtp = '123456';
+    console.log(`phone = ${phone}`);
+    console.log(`otpMap = `, otpMap);
     if (otpMap[phone] != null) {
-        const storedData = otpMap.get(phone);
+        const storedData = otpMap[phone]['otp'];
+        console.log(`storedData = ${storedData}`);
+        console.log(`typeof storedData = ${typeof storedData}`);
+        console.log(`otp = ${otp}`);
+        console.log(`typeof otp = ${typeof otp}`);
         const { storedOtp, timestamp } = storedData;
-        if (otp === storedOtp && Date.now() - timestamp < 600000) {
+        // if (storedData.toString().isEqual(otp)) {
+        if (parseInt(otp, 10) == storedData) { //  && Date.now() - timestamp < 600000
+
             // 300000 milliseconds (5 minutes) is the validity window for the OTP
             res.status(200).json({ message: 'OTP verification successful' });
         } else {
